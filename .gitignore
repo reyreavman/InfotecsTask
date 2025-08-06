@@ -10,3 +10,4 @@ profile.cov
 go.work
 go.work.sum
 .vscode/
+.out

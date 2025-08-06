@@ -1,7 +1,7 @@
 CREATE TABLE wallets
 (
     id          VARCHAR(64) PRIMARY KEY,
-    balance     DECIMAL(10, 2) NOT NULL DEFAULT 100.00
+    balance     DECIMAL(10, 2) NOT NULL CHECK (balance >= 0)
 );
 
 COMMENT ON TABLE wallets IS 'Таблица для хранения информации о кошельках';

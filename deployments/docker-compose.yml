@@ -20,6 +20,7 @@ services:
       POSTGRES_SSL_MODE: "${POSTGRES_SSL_MODE}"
       POSTGRES_MAX_OPEN_CONNS: "${POSTGRES_MAX_OPEN_CONNS}"
       POSTGRES_MAX_IDLE_CONNS: "${POSTGRES_MAX_IDLE_CONNS}"
+
   postgres:
     container_name: postgres
     image: postgres:17-alpine
@@ -29,3 +30,21 @@ services:
       POSTGRES_DB: "${POSTGRES_DB_NAME}"
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ../init/migrations:/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: 
+      - "-path=/migrations"
+      - "-database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB_NAME}?sslmode=${POSTGRES_SSL_MODE}"
+      - "up"
+    restart: on-failure
