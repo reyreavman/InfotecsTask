@@ -20,11 +20,11 @@ type Config struct {
 func LoadConfig() Config {
 	maxOpenConns, err := strconv.Atoi(os.Getenv("POSTGRES_MAX_OPEN_CONNS"))
 	if err != nil {
-		log.Fatalf("Failed to get env: %w", err)	
+		log.Fatalf("Failed to get env: %s", err.Error())	
 	}
 	maxIdleConns, err := strconv.Atoi(os.Getenv("POSTGRES_MAX_IDLE_CONNS"))
 	if err != nil {
-		log.Fatalf("Failed to get env: %w", err)
+		log.Fatalf("Failed to get env: %s", err.Error())
 	}
 
 	return Config{
