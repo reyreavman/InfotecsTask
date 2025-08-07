@@ -31,15 +31,15 @@
 - [github.com/lib/pq](https://pkg.go.dev/github.com/lib/pq@v1.10.9) - выбран в качестве Postgres-драйвера
 - [github.com/google/uuid](https://pkg.go.dev/github.com/google/uuid@v1.6.0) - для генерации UUID
 - [Docker](https://www.docker.com/) - платформа контейнеризации
-- [Github Actions] - для прогона тестов
+- [Github Actions] - для прогона пайплайна
 
 ### Тестирование
 ---
 Для тестирования в проекте были использованы:
-- [github.com/testcontainers/testcontainers-go/modules/postgres](https://www.red-gate.com/products/flyway/community/) - Postgres TestContainer
-- [github.com/stretchr/testify](https://assertj.github.io/doc/) - пакет для тестирования
+- [github.com/testcontainers/testcontainers-go/modules/postgres](https://pkg.go.dev/github.com/testcontainers/testcontainers-go/modules/postgres@v0.38.0) - Postgres TestContainer
+- [github.com/stretchr/testify](https://pkg.go.dev/github.com/stretchr/testify@v1.10.0) - пакет для тестирования
 
-Проект покрыт юнит и интеграционными тестами. Написаны юнит тесты для всех основных сценариев использования handlerа
+Проект покрыт юнит и интеграционными тестами. Написаны юнит тесты для всех основных сценариев использования handler.
 Также написаны интеграционные тесты с помощью TestContainers для тестирования слоя репозиториев.
 
 ### Требования к запуску
@@ -65,8 +65,8 @@ $ docker compose up
 **Тело запроса (JSON)**:
 ```json
 {
-  "from": "e240d825d255af751f5f55af8d9671beabdf2236c0a3b4e2639b3e182d994c88e",
-  "to": "9b3e182d994c88ee240d825d255af751f5f55af8d9671beabdf2236c0a3b4e26",
+  "from": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10",
+  "to": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14",
   "amount": 3.50
 }
 ```
@@ -295,20 +295,16 @@ GET /api/wallet/wallet_A/balance
 
 ### Примечания
 1. **Формат адресов**:  
-   Строка из 64 hex-символов (`[a-f0-9]{64}`)
-   
-2. **Формат сумм**:  
-   - Все суммы с двумя знаками после точки
-   - Минимальная сумма: 0.01
+   Строка формата UUID (`[a-f0-9]{64}`)
 
-3. **Формат времени**:  
+2. **Формат времени**:  
    ISO 8601 в UTC: `YYYY-MM-DDThh:mm:ssZ`
 
-4. **Лимиты**:  
+3. **Лимиты**:  
    - Максимальное количество запросов в течение 1 минуты с одного IP: 100
 
-5. **Заголовки**:  
-   Все запросы требуют:  
+4. **Заголовки**:  
+   Все запросы, требующие тело, также требуют:  
    ```http
    Content-Type: application/json
    ```
