@@ -24,7 +24,7 @@ func (h *Handler) CreateTransaction(c *gin.Context) {
 
 	transaction, err := h.facade.CreateTransaction(c.Request.Context(), createTransactionRequest)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
 		return
 	}
 
@@ -37,7 +37,7 @@ func (h *Handler) GetTransactions(c *gin.Context) {
 	if params.Count != nil {
 		transactions, err := h.facade.GetTransactions(c.Request.Context(), *params.Count)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
 
@@ -45,7 +45,7 @@ func (h *Handler) GetTransactions(c *gin.Context) {
 	} else {
 		transactions, err := h.facade.GetAllTransactions(c.Request.Context())
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err})
+			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
 
@@ -58,7 +58,7 @@ func (h *Handler) GetWallet(c *gin.Context) {
 
 	wallet, err := h.facade.GetWallet(c.Request.Context(), walletId)
 	if err != nil {
-		c.AbortWithError(http.StatusNotFound, err)
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
