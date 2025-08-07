@@ -31,14 +31,3 @@ func (r WalletRepository) GetWallet(ctx context.Context, walletId uuid.UUID) (*m
 
 	return wallet, nil
 }
-
-func (r WalletRepository) UpdateWallet(ctx context.Context, wallet *models.Wallet) (*models.Wallet, error) {
-	sql := `UPDATE wallets SET balance = $1 WHERE id = $2`
-
-	err := r.db.Exec(ctx, sql, wallet.Balance, wallet.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return wallet, nil
-}

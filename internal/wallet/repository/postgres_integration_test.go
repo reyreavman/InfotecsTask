@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"infotecstechtask/internal/models"
 	"infotecstechtask/pkg/database"
 	"infotecstechtask/test/testutils"
@@ -12,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -88,46 +87,6 @@ func (suite *WalletRepositoryTestSuite) TestGetNonExistentWallet() {
 	nonExistentUUID := uuid.MustParse("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a20")
 	_, err = suite.repo.GetWallet(suite.ctx, nonExistentUUID)
 	suite.Require().Error(err)
-}
 
-func (suite *WalletRepositoryTestSuite) TestUpdateWalletSuccess() {
-	err := suite.fixtures.ApplySQLFixture(suite.ctx, "wallets/wallets.sql")
-	suite.Require().NoError(err)
-
-	var walletToUpdate models.Wallet
-	err = suite.dataLoader.LoadJSONFixture("wallets/wallet.json", &walletToUpdate)
-	suite.Require().NoError(err)
-
-	var expected models.Wallet
-	err = suite.dataLoader.LoadJSONFixture("wallets/updated_wallet.json", &expected)
-	suite.Require().NoError(err)
-
-	walletToUpdate.Balance = expected.Balance
-	actual, err := suite.repo.UpdateWallet(suite.ctx, &walletToUpdate)
-	suite.Require().NoError(err)
-
-	suite.Assert().Equal(expected, *actual)
-}
-
-func (suite *WalletRepositoryTestSuite) TestUpdateWalletWithNegativeBalance() {
-	err := suite.fixtures.ApplySQLFixture(suite.ctx, "wallets/wallets.sql")
-	suite.Require().NoError(err)
-
-	var wallet models.Wallet
-	err = suite.dataLoader.LoadJSONFixture("wallets/wallet.json", &wallet)
-	suite.Require().NoError(err)
-
-	updatedWallet := models.Wallet{
-		ID:      wallet.ID,
-		Balance: -50,
-	}
-	_, err = suite.repo.UpdateWallet(suite.ctx, &updatedWallet)
-	suite.Require().Error(err, "Expected error for negative balance")
-
-	var pgErr *pgconn.PgError
-	suite.Require().True(errors.As(err, &pgErr), "Error should be of type PgError")
-
-	actualWallet, err := suite.repo.GetWallet(suite.ctx, wallet.ID)
-	suite.Require().NoError(err)
-	suite.Assert().Equal(wallet.Balance, actualWallet.Balance)
+	suite.Assert().Equal(pgx.ErrNoRows, err)
 }
