@@ -1,0 +1,9 @@
+{
+    "error": "Validation failed",
+    "details": [
+        {
+            "field": "Amount",
+            "message": "Field must be greater than 0"
+        }
+    ]
+}

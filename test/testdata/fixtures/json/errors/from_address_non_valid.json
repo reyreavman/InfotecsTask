@@ -1,0 +1,9 @@
+{
+    "error": "Validation failed",
+    "details": [
+        {
+            "field": "FromAddress",
+            "message": "Field must be a valid UUID"
+        }
+    ]
+}

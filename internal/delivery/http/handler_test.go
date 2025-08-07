@@ -309,3 +309,93 @@ func (tf *TestInfrastructure) TestGetWalletNotFound() {
 
 	tf.Assert().Equal(404, w.Code)
 }
+
+func (tf *TestInfrastructure) TestCreateTransactionWithNonValidRequest() {
+	var requestWithoutFromAddress models.CreateTransactionRequest
+	err := tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_without_from_address.json", &requestWithoutFromAddress)
+	tf.Require().NoError(err)
+	var requestWithNonValidFromAddress models.CreateTransactionRequest
+	err = tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_with_non_valid_from_address.json", &requestWithNonValidFromAddress)
+	tf.Require().NoError(err)
+	var requestWithoutToAddress models.CreateTransactionRequest
+	err = tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_without_to_address.json", &requestWithoutToAddress)
+	tf.Require().NoError(err)
+	var requestWithNonValidToAddress models.CreateTransactionRequest
+	err = tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_with_non_valid_to_address.json", &requestWithNonValidToAddress)
+	tf.Require().NoError(err)
+	var requestWithoutAmount models.CreateTransactionRequest
+	err = tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_without_amount.json", &requestWithoutAmount)
+	tf.Require().NoError(err)
+	var requestWithNegativeAmount models.CreateTransactionRequest
+	err = tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request_with_negative_amount.json", &requestWithNegativeAmount)
+	tf.Require().NoError(err)
+
+	var fromAddressRequired models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/from_address_required.json", &fromAddressRequired)
+	tf.Require().NoError(err)
+	var fromAddressNonValid models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/from_address_non_valid.json", &fromAddressNonValid)
+	tf.Require().NoError(err)
+	var toAddressRequired models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/to_address_required.json", &toAddressRequired)
+	tf.Require().NoError(err)
+	var toAddressNonValid models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/to_address_non_valid.json", &toAddressNonValid)
+	tf.Require().NoError(err)
+	var amountRequired models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/amount_required.json", &amountRequired)
+	tf.Require().NoError(err)
+	var amountNegative models.ValidationError
+	err = tf.dataLoader.LoadJSONFixture("errors/amount_negative.json", &amountNegative)
+	tf.Require().NoError(err)
+
+	RegisterHTTPEndpoints(&tf.rGroup.RouterGroup, nil, tf.validate)
+
+	testCases := []struct {
+		request          models.CreateTransactionRequest
+		expectedResponse models.ValidationError
+	}{
+		{
+			request:          requestWithoutFromAddress,
+			expectedResponse: fromAddressRequired,
+		},
+		{
+			request:          requestWithNonValidFromAddress,
+			expectedResponse: fromAddressNonValid,
+		},
+		{
+			request:          requestWithoutToAddress,
+			expectedResponse: toAddressRequired,
+		},
+		{
+			request:          requestWithNonValidToAddress,
+			expectedResponse: toAddressNonValid,
+		},
+		{
+			request:          requestWithoutAmount,
+			expectedResponse: amountRequired,
+		},
+		{
+			request:          requestWithNegativeAmount,
+			expectedResponse: amountNegative,
+		},
+	}
+
+	for _, tc := range testCases {
+		jsonRequest, err := json.Marshal(tc.request)
+		tf.Require().NoError(err)
+		body := bytes.NewBuffer(jsonRequest)
+
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPost, FULL_SEND, body)
+		req.Header.Add("Content-Type", "application/json")
+
+		tf.rGroup.ServeHTTP(w, req)
+
+		expectedResponseBody, err := json.Marshal(tc.expectedResponse)
+		tf.Require().NoError(err)
+
+		tf.Assert().Equal(400, w.Code)
+		tf.Assert().Equal(string(expectedResponseBody), w.Body.String())
+	}
+}
