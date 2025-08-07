@@ -146,6 +146,41 @@ func (tf *TestInfrastructure) TestCreateTransactionErrRecipientWalletNotFound() 
 	tf.Assert().Equal(string(expectedResponseBody), w.Body.String())
 }
 
+func (tf *TestInfrastructure) TestCreateTransactionSenderNotHaveEnoughBalance() {
+	var request models.CreateTransactionRequest
+	err := tf.dataLoader.LoadJSONFixture("transactions/request/create_transaction_request.json", &request)
+	tf.Require().NoError(err)
+
+	var expectedResp models.TransactionResponse
+	err = tf.dataLoader.LoadJSONFixture("transactions/response/failed_transaction_response.json", &expectedResp)
+	tf.Require().NoError(err)
+
+	mockFacade := new(facade.MockFacade)
+	mockFacade.On(
+		"CreateTransaction",
+		mock.Anything,
+		&request,
+	).Return(&expectedResp, nil)
+
+	RegisterHTTPEndpoints(&tf.rGroup.RouterGroup, mockFacade, tf.validate)
+
+	jsonRequest, err := json.Marshal(request)
+	tf.Require().NoError(err)
+	body := bytes.NewBuffer(jsonRequest)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodPost, FULL_SEND, body)
+	req.Header.Add("Content-Type", "application/json")
+
+	tf.rGroup.ServeHTTP(w, req)
+
+	expectedResponseBody, err := json.Marshal(expectedResp)
+	tf.Require().NoError(err)
+
+	tf.Assert().Equal(200, w.Code)
+	tf.Assert().Equal(string(expectedResponseBody), w.Body.String())
+}
+
 func (tf *TestInfrastructure) TestGetAllTransactionSuccess() {
 	var allTransactions []*models.Transaction
 	err := tf.dataLoader.LoadJSONFixture("transactions/all_transactions.json", &allTransactions)
