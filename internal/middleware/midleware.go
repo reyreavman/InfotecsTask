@@ -27,18 +27,24 @@ func JSONValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		val := createModelInstance(model)
 
 		if err := c.ShouldBindJSON(val); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error":   "Invalid JSON format",
-				"details": formatJSONValidationErrors(err),
-			})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				models.ValidationError{
+					Error:   "Invalid JSON format",
+					Details: formatJSONValidationErrors(err),
+				},
+			)
 			return
 		}
 
 		if err := validate.Struct(val); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error":   "Validation failed",
-				"details": formatJSONValidationErrors(err),
-			})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				models.ValidationError{
+					Error:   "Validation failed",
+					Details: formatJSONValidationErrors(err),
+				},
+			)
 			return
 		}
 
@@ -70,10 +76,10 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 				"details": formatErrors(err),
 			})
 			return
-		}		
+		}
 
 		if err := validate.Struct(val); err != nil {
-			c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Validation failed",
 				"details": formatErrors(err),
 			})
@@ -89,7 +95,7 @@ func formatJSONValidationErrors(err error) []models.FieldError {
 	errors := make([]models.FieldError, 0)
 	for _, fieldErr := range err.(validator.ValidationErrors) {
 		errors = append(
-			errors, 
+			errors,
 			models.FieldError{
 				Field:   fieldErr.Field(),
 				Message: getValidationMessage(fieldErr),
@@ -123,14 +129,14 @@ func createModelInstance(model any) any {
 }
 
 func getValidationMessage(fieldErr validator.FieldError) string {
-    switch fieldErr.Tag() {
-    case "required":
-        return "Field is required"
-    case "uuid":
-        return "Field must be a valid UUID"
-    case "min":
-        return fmt.Sprintf("Field must be greater than %s", fieldErr.Param())
-    default:
-        return fieldErr.Tag()
-    }
+	switch fieldErr.Tag() {
+	case "required":
+		return "Field is required"
+	case "uuid":
+		return "Field must be a valid UUID"
+	case "min":
+		return fmt.Sprintf("Field must be greater than %s", fieldErr.Param())
+	default:
+		return fieldErr.Tag()
+	}
 }
