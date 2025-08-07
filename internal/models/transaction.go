@@ -18,8 +18,8 @@ type Transaction struct {
 
 // Модель для API-запроса на создание транзакции (DTO)
 type CreateTransactionRequest struct {
-	FromAddress uuid.UUID `json:"from" validate:"required,uuid"`
-	ToAddress   uuid.UUID `json:"to" validate:"required,uuid"`
+	FromAddress string `json:"from" validate:"required,uuid"`
+	ToAddress   string `json:"to" validate:"required,uuid"`
 	Amount      float32   `json:"amount" validate:"required,min=0"`
 }
 
@@ -69,11 +69,11 @@ func ToTransactionResponses(transactions []*Transaction) []*TransactionResponse 
 	return transactionResponses
 }
 
-func ToTransaction(transaction *CreateTransactionRequest, uuid uuid.UUID, status Status, createdAt time.Time, message string) *Transaction {
+func ToTransaction(transaction *CreateTransactionRequest, id uuid.UUID, status Status, createdAt time.Time, message string) *Transaction {
 	return &Transaction{
-		ID:          uuid,
-		FromAddress: transaction.FromAddress,
-		ToAddress:   transaction.ToAddress,
+		ID:          id,
+		FromAddress: uuid.MustParse(transaction.FromAddress),
+		ToAddress:   uuid.MustParse(transaction.ToAddress),
 		Amount:      transaction.Amount,
 		Status:      status,
 		Message:     message,

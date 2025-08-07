@@ -85,8 +85,8 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentSuccess() {
 	response, err := suite.repo.CreatePayment(suite.ctx, &request)
 	suite.Require().NoError(err)
 
-	suite.Assert().Equal(request.FromAddress, response.FromAddress)
-	suite.Assert().Equal(request.ToAddress, response.ToAddress)
+	suite.Assert().Equal(request.FromAddress, response.FromAddress.String())
+	suite.Assert().Equal(request.ToAddress, response.ToAddress.String())
 	suite.Assert().Equal(request.Amount, response.Amount)
 	suite.Assert().Equal(models.Completed, response.Status)
 	suite.Assert().NotNil(response.ID)
@@ -116,8 +116,8 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentInsufficientFunds() {
 	response, err := suite.repo.CreatePayment(suite.ctx, &request)
 	suite.Require().NoError(err)
 
-	suite.Assert().Equal(request.FromAddress, response.FromAddress)
-	suite.Assert().Equal(request.ToAddress, response.ToAddress)
+	suite.Assert().Equal(request.FromAddress, response.FromAddress.String())
+	suite.Assert().Equal(request.ToAddress, response.ToAddress.String())
 	suite.Assert().Equal(request.Amount, response.Amount)
 	suite.Assert().Equal(models.Failed, response.Status)
 	suite.Assert().NotNil(response.ID)
@@ -139,8 +139,8 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentSenderNotFound() {
 	suite.Require().NoError(err)
 
 	request := &models.CreateTransactionRequest{
-		FromAddress: senderID,
-		ToAddress:   recipient.ID,
+		FromAddress: senderID.String(),
+		ToAddress:   recipient.ID.String(),
 		Amount:      50.0,
 	}
 
@@ -168,8 +168,8 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentRecipientNotFound() {
 	recipientID := uuid.New()
 
 	request := &models.CreateTransactionRequest{
-		FromAddress: sender.ID,
-		ToAddress:   recipientID,
+		FromAddress: sender.ID.String(),
+		ToAddress:   recipientID.String(),
 		Amount:      50.0,
 	}
 

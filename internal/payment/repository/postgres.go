@@ -55,8 +55,8 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 
 		transaction = &models.Transaction{
 			ID:          uuid.New(),
-			FromAddress: createTransactionRequest.FromAddress,
-			ToAddress:   createTransactionRequest.ToAddress,
+			FromAddress: uuid.MustParse(createTransactionRequest.FromAddress),
+			ToAddress:   uuid.MustParse(createTransactionRequest.ToAddress),
 			Amount:      createTransactionRequest.Amount,
 			Status:      models.Pending,
 			Message:     "Transaction Pending",
