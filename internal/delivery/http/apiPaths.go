@@ -2,6 +2,7 @@ package http
 
 const (
 	BASED_PATH = "/api"
+	SWAGGER = "/swagger/*any"
 
 	SEND = "/send"
 	TRANSACTIONS = "/transactions"
