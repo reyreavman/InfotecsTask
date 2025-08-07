@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+	"infotecstechtask/internal/models"
 	"net/http"
 	"reflect"
 
@@ -27,15 +29,15 @@ func JSONValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		if err := c.ShouldBindJSON(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Invalid JSON format",
-				"details": formatValidationErrors(err),
+				"details": formatJSONValidationErrors(err),
 			})
 			return
 		}
 
 		if err := validate.Struct(val); err != nil {
-			c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Validation failed",
-				"details": formatValidationErrors(err),
+				"details": formatJSONValidationErrors(err),
 			})
 			return
 		}
@@ -57,19 +59,15 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		if err := c.ShouldBindUri(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Invalid path parameters",
-				"details": formatValidationErrors(err),
+				"details": formatErrors(err),
 			})
 			return
 		}
-		
-		// val := &models.GetWalletBalanceRequest{
-		// 	ID: uuid.MustParse("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10"),
-		// }
 
 		if err := c.ShouldBindQuery(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Invalid query parameters",
-				"details": formatValidationErrors(err),
+				"details": formatErrors(err),
 			})
 			return
 		}		
@@ -77,7 +75,7 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		if err := validate.Struct(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
 				"error":   "Validation failed",
-				"details": formatValidationErrors(err),
+				"details": formatErrors(err),
 			})
 			return
 		}
@@ -87,15 +85,31 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 	}
 }
 
-func formatValidationErrors(err error) map[string]string {
+func formatJSONValidationErrors(err error) []models.FieldError {
+	errors := make([]models.FieldError, 0)
+	for _, fieldErr := range err.(validator.ValidationErrors) {
+		errors = append(
+			errors, 
+			models.FieldError{
+				Field:   fieldErr.Field(),
+				Message: getValidationMessage(fieldErr),
+			},
+		)
+	}
+
+	return errors
+}
+
+func formatErrors(err error) map[string]string {
 	errors := make(map[string]string)
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, fieldErr := range validationErrors {
 			errors[fieldErr.Field()] = fieldErr.Tag()
 		}
 	} else {
-		errors["_error"] = err.Error()
+		errors["error"] = err.Error()
 	}
+
 	return errors
 }
 
@@ -104,5 +118,19 @@ func createModelInstance(model any) any {
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
+
 	return reflect.New(t).Interface()
+}
+
+func getValidationMessage(fieldErr validator.FieldError) string {
+    switch fieldErr.Tag() {
+    case "required":
+        return "Field is required"
+    case "uuid":
+        return "Field must be a valid UUID"
+    case "min":
+        return fmt.Sprintf("Field must be greater than %s", fieldErr.Param())
+    default:
+        return fieldErr.Tag()
+    }
 }
