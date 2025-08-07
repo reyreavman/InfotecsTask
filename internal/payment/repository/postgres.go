@@ -7,7 +7,6 @@ import (
 	"infotecstechtask/internal/models"
 	"infotecstechtask/internal/payment"
 	"infotecstechtask/pkg/database"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,7 +35,6 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			createTransactionRequest.FromAddress,
 		).Scan(&senderBalance)
 		if err != nil {
-			log.Printf("Ошибка при блокировке кошелька sender: %v", err)
 			if errors.Is(err, pgx.ErrNoRows) {
 				return payment.ErrSenderWalletNotFound
 			}
@@ -49,7 +47,6 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			createTransactionRequest.ToAddress,
 		).Scan(&recipientBalance)
 		if err != nil {
-			log.Printf("Ошибка при блокировке кошелька recipient: %v", err)
 			if errors.Is(err, pgx.ErrNoRows) {
 				return payment.ErrRecipientWalletNotFound
 			}
@@ -62,30 +59,33 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			ToAddress:   createTransactionRequest.ToAddress,
 			Amount:      createTransactionRequest.Amount,
 			Status:      models.Pending,
+			Message:     "Transaction Pending",
 			CreatedAt:   time.Now(),
 		}
 
 		_, err = tx.Exec(
 			ctx,
-			`INSERT INTO transactions (id, from_address, to_address, amount, status, created_at) VALUES ($1, $2, $3, $4, $5, $6)`,
+			`INSERT INTO transactions (id, from_address, to_address, amount, status, message, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 			transaction.ID,
 			transaction.FromAddress,
 			transaction.ToAddress,
 			transaction.Amount,
 			transaction.Status,
+			transaction.Message,
 			transaction.CreatedAt,
 		)
 		if err != nil {
-			log.Printf("Ошибка при создании транзакции: %v", err)
 			return fmt.Errorf("failed to create transaction: %w", err)
 		}
 
 		if senderBalance < createTransactionRequest.Amount {
 			transaction.Status = models.Failed
+			transaction.Message = "Sender does not have enough balance"
 			_, err = tx.Exec(
 				ctx,
-				`UPDATE transactions SET status = $1 WHERE id = $2`,
+				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
 				transaction.Status,
+				transaction.Message,
 				transaction.ID,
 			)
 			if err != nil {
@@ -102,10 +102,12 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		)
 		if err != nil {
 			transaction.Status = models.Failed
+			transaction.Message = "Transaction failed"
 			_, err = tx.Exec(
 				ctx,
-				`UPDATE transactions SET status = $1 WHERE id = $2`,
+				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
 				transaction.Status,
+				transaction.Message,
 				transaction.ID,
 			)
 			return nil
@@ -119,10 +121,12 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		)
 		if err != nil {
 			transaction.Status = models.Failed
+			transaction.Message = "Transaction failed"
 			_, err = tx.Exec(
 				ctx,
-				`UPDATE transactions SET status = $1 WHERE id = $2`,
+				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
 				transaction.Status,
+				transaction.Message,
 				transaction.ID,
 			)
 			_, err = tx.Exec(
@@ -135,10 +139,12 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		}
 
 		transaction.Status = models.Completed
+		transaction.Message = "Transaction completed"
 		_, err = tx.Exec(
 			ctx,
-			`UPDATE transactions SET status = $1 WHERE id = $2`,
+			`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
 			transaction.Status,
+			transaction.Message,
 			transaction.ID,
 		)
 		if err != nil {

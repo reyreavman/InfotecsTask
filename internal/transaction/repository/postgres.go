@@ -17,7 +17,7 @@ func NewTransactionRepository(db *database.Client) *TransactionRepository {
 }
 
 func (r TransactionRepository) GetTransactions(ctx context.Context, count int) ([]*models.Transaction, error) {
-	sql := `SELECT id, from_address, to_address, amount, status, created_at 
+	sql := `SELECT id, from_address, to_address, amount, status, message, created_at 
             FROM transactions 
             ORDER BY created_at DESC 
             LIMIT $1`
@@ -31,7 +31,7 @@ func (r TransactionRepository) GetTransactions(ctx context.Context, count int) (
 	transactions := make([]*models.Transaction, 0, count)
 	for rows.Next() {
 		var t models.Transaction
-		err := rows.Scan(&t.ID, &t.FromAddress, &t.ToAddress, &t.Amount, &t.Status, &t.CreatedAt)
+		err := rows.Scan(&t.ID, &t.FromAddress, &t.ToAddress, &t.Amount, &t.Status, &t.Message, &t.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -46,7 +46,7 @@ func (r TransactionRepository) GetTransactions(ctx context.Context, count int) (
 }
 
 func (r TransactionRepository) GetAllTransactions(ctx context.Context) ([]*models.Transaction, error) {
-	sql := `SELECT id, from_address, to_address, amount, status, created_at 
+	sql := `SELECT id, from_address, to_address, amount, status, message, created_at 
             FROM transactions 
             ORDER BY created_at DESC`
 
@@ -59,7 +59,7 @@ func (r TransactionRepository) GetAllTransactions(ctx context.Context) ([]*model
 	transactions := []*models.Transaction{}
 	for rows.Next() {
 		var t models.Transaction
-		err := rows.Scan(&t.ID, &t.FromAddress, &t.ToAddress, &t.Amount, &t.Status, &t.CreatedAt)
+		err := rows.Scan(&t.ID, &t.FromAddress, &t.ToAddress, &t.Amount, &t.Status, &t.Message, &t.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

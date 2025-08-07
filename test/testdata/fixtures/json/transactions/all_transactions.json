@@ -5,6 +5,7 @@
         "ToAddress": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
         "Amount": 10,
         "Status": "pending",
+        "Message": "Transaction pending",
         "CreatedAt": "2025-08-04T00:00:00Z"
     },
     {
@@ -13,6 +14,7 @@
         "ToAddress": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
         "Amount": 3000,
         "Status": "failed",
+        "Message": "Sender does not have enough balance",
         "CreatedAt": "2025-08-03T00:00:00Z"
     },
     {
@@ -21,6 +23,7 @@
         "ToAddress": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
         "Amount": 13.3,
         "Status": "completed",
+        "Message": "Transaction completed",
         "CreatedAt": "2025-08-02T00:00:00Z"
     }
 ]

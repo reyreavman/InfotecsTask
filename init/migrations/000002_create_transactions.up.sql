@@ -5,6 +5,7 @@ CREATE TABLE transactions
     to_address      VARCHAR(64) NOT NULL,
     amount          DECIMAL(10, 2) NOT NULL CHECK (amount > 0),
     status          VARCHAR NOT NULL,
+    message         VARCHAR NOT NULL,
     created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (from_address) REFERENCES wallets(id),
@@ -20,3 +21,4 @@ COMMENT ON COLUMN transactions.to_address IS 'Идентификатор пол�
 COMMENT ON COLUMN transactions.amount IS 'Сумма транзакции';
 COMMENT ON COLUMN transactions.status IS 'Статус транзакции';
 COMMENT ON COLUMN transactions.created_at IS 'Время создания транзакции';
+COMMENT ON COLUMN transactions.message IS 'Сообщение';

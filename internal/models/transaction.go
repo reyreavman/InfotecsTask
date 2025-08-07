@@ -12,6 +12,7 @@ type Transaction struct {
 	ToAddress   uuid.UUID
 	Amount      float32
 	Status      Status
+	Message     string
 	CreatedAt   time.Time
 }
 
@@ -29,6 +30,7 @@ type TransactionResponse struct {
 	ToAddress   uuid.UUID `json:"to"`
 	Amount      float32   `json:"amount"`
 	Status      Status    `json:"status"`
+	Message     string    `json:"message"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -43,6 +45,7 @@ func ToTransactionResponse(transaction *Transaction) *TransactionResponse {
 		ToAddress:   transaction.ToAddress,
 		Amount:      transaction.Amount,
 		Status:      transaction.Status,
+		Message:     transaction.Message,
 		CreatedAt:   transaction.CreatedAt,
 	}
 }
@@ -57,6 +60,7 @@ func ToTransactionResponses(transactions []*Transaction) []*TransactionResponse 
 			ToAddress:   transaction.ToAddress,
 			Amount:      transaction.Amount,
 			Status:      transaction.Status,
+			Message:     transaction.Message,
 			CreatedAt:   transaction.CreatedAt,
 		}
 		transactionResponses = append(transactionResponses, tr)
@@ -65,13 +69,14 @@ func ToTransactionResponses(transactions []*Transaction) []*TransactionResponse 
 	return transactionResponses
 }
 
-func ToTransaction(transaction *CreateTransactionRequest, uuid uuid.UUID, status Status, createdAt time.Time) *Transaction {
+func ToTransaction(transaction *CreateTransactionRequest, uuid uuid.UUID, status Status, createdAt time.Time, message string) *Transaction {
 	return &Transaction{
 		ID:          uuid,
 		FromAddress: transaction.FromAddress,
 		ToAddress:   transaction.ToAddress,
 		Amount:      transaction.Amount,
 		Status:      status,
+		Message:     message,
 		CreatedAt:   createdAt,
 	}
 }
