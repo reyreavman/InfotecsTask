@@ -12,7 +12,7 @@ type TransactionService struct {
 	transactionRepository transaction.Repository
 }
 
-func NewTransactionRepository(transactionRepository transaction.Repository) *TransactionService {
+func NewTransactionService(transactionRepository transaction.Repository) *TransactionService {
 	return &TransactionService{
 		transactionRepository: transactionRepository,
 	}

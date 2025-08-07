@@ -46,7 +46,7 @@ func NewApp() *App {
 	paymentRepository := prepo.NewPaymentRepository(dbClient)
 
 	walletService := wservice.NewWalletService(walletRepository)
-	transactionService := tservice.NewTransactionRepository(transactionRepository)
+	transactionService := tservice.NewTransactionService(transactionRepository)
 
 	return &App{
 		facade: *facade.NewFacade(walletService, transactionService, paymentRepository),
@@ -57,8 +57,8 @@ func NewApp() *App {
 // Реализован базовый механизм graceful shutdown
 func (a App) Run(port string) error {
 	rate := limiter.Rate{
-		Period:    1 * time.Minute,
-		Limit:     100,
+		Period: 1 * time.Minute,
+		Limit:  100,
 	}
 	store := memory.NewStore()
 	limiterInstance := limiter.New(store, rate)

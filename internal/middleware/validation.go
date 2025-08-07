@@ -79,7 +79,6 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		if err := c.ShouldBindQuery(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Invalid query parameters",
-				"details": formatErrors(err),
 			})
 			return
 		}
@@ -87,7 +86,7 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		if err := validate.Struct(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":   "Validation failed",
-				"details": formatErrors(err),
+				"details": formatJSONValidationErrors(err),
 			})
 			return
 		}
@@ -120,10 +119,7 @@ func formatErrors(err error) map[string]string {
 		for _, fieldErr := range validationErrors {
 			errors[fieldErr.Field()] = fieldErr.Tag()
 		}
-	} else {
-		errors["error"] = err.Error()
 	}
-
 	return errors
 }
 

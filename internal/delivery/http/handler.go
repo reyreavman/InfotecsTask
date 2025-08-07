@@ -29,9 +29,9 @@ func (h *Handler) CreateTransaction(c *gin.Context) {
 
 	transaction, err := h.facade.CreateTransaction(c.Request.Context(), createTransactionRequest)
 	if err != nil {
-		if errors.Is(err, payment.ErrSenderWalletNotFound) || errors.Is(err, payment.ErrRecipientWalletNotFound) {
+		if errors.Is(err, payment.ErrSenderWalletNotFound) || errors.Is(err, payment.ErrRecipientWalletNotFound) || errors.Is(err, payment.ErrSenderAndRecipientSame) {
 			c.AbortWithStatusJSON(
-				http.StatusBadRequest, 
+				http.StatusBadRequest,
 				models.Error{
 					Error: err.Error(),
 				},

@@ -35,6 +35,10 @@ func NewPaymentRepository(db *database.Client) *PaymentRepository {
 // В случае, если все необходимые условия выполнены,
 // запись о транзакции в БД обновляется со статусом completed и соответствующим сообщением
 func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransactionRequest *models.CreateTransactionRequest) (*models.TransactionResponse, error) {
+	if createTransactionRequest.FromAddress == createTransactionRequest.ToAddress {
+		return nil, payment.ErrSenderAndRecipientSame
+	}
+
 	var transaction *models.Transaction
 
 	err := r.db.ExecuteTx(ctx, func(tx pgx.Tx) error {
@@ -70,7 +74,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			ToAddress:   uuid.MustParse(createTransactionRequest.ToAddress),
 			Amount:      createTransactionRequest.Amount,
 			Status:      models.Pending,
-			Message:     "Transaction Pending",
+			Message:     models.TRANSACTION_PENDING,
 			CreatedAt:   time.Now(),
 		}
 
