@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"infotecstechtask/internal/facade"
+	"infotecstechtask/internal/middleware"
 	"infotecstechtask/pkg/database"
 	"log"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/ulule/limiter/v3"
+	"github.com/ulule/limiter/v3/drivers/store/memory"
 
 	dhttp "infotecstechtask/internal/delivery/http"
 	prepo "infotecstechtask/internal/payment/repository"
@@ -53,10 +56,18 @@ func NewApp() *App {
 // Функция для запуска http сервера
 // Реализован базовый механизм graceful shutdown
 func (a App) Run(port string) error {
+	rate := limiter.Rate{
+		Period:    1 * time.Minute,
+		Limit:     100,
+	}
+	store := memory.NewStore()
+	limiterInstance := limiter.New(store, rate)
+
 	router := gin.Default()
 	router.Use(
 		gin.Recovery(),
 		gin.Logger(),
+		middleware.RateLimiter(limiterInstance),
 	)
 
 	validate := validator.New()
