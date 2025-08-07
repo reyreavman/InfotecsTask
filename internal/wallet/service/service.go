@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+// Реализация сервиса
+// Ответственна за обработку ошибок и маппинг моделей
 type WalletService struct {
 	walletRepository wallet.Repository
 }

@@ -11,6 +11,11 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// Структура загрузчика SQL миграций
+// Используется для загрузки и накатывания миграций-фикстур на testContainer
+// Хранит в себе базовый путь до тестовых файлов и pgx connection pool
+// 
+// Используется только для тестирования
 type FixtureManager struct {
 	pool     *pgxpool.Pool
 	basePath string
@@ -25,6 +30,7 @@ func NewFixtureManager(pool *pgxpool.Pool) *FixtureManager {
 	}
 }
 
+//Функция для загрузки и накатывания фикстур
 func (fm *FixtureManager) ApplySQLFixture(ctx context.Context, fixturePath string) error {
 	fullPath := filepath.Join(fm.basePath, "fixtures", "sql", fixturePath)
 	content, err := ioutil.ReadFile(fullPath)
@@ -43,8 +49,4 @@ func (fm *FixtureManager) ApplySQLFixture(ctx context.Context, fixturePath strin
 		}
 	}
 	return nil
-}
-
-func (fm *FixtureManager) GetFullPath(fixtureType string, fixturePath string) string {
-	return filepath.Join(fm.basePath, "fixtures", fixtureType, fixturePath)
 }

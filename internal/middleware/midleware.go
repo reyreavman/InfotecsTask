@@ -10,6 +10,9 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Миддлвар для валидации JSON объектов
+// Внутри происходит сборка объекта модели и его валидация
+// Если во время сборки или валидации возникает ошибка, конструируется ответ и отправляется клиенту
 func JSONValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method != http.MethodPost {
@@ -53,6 +56,9 @@ func JSONValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 	}
 }
 
+// Миддлвар для валидации Path и Query параметров
+// Внутри происходит сборка объекта модели параметров запроса и его валидация
+// Если во время сборки или валидации возникает ошибка, конструируется ответ и отправляется клиенту
 func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method != http.MethodGet {
@@ -91,6 +97,7 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 	}
 }
 
+// Функция для форматирования ошибок валидации
 func formatJSONValidationErrors(err error) []models.FieldError {
 	errors := make([]models.FieldError, 0)
 	for _, fieldErr := range err.(validator.ValidationErrors) {
@@ -106,6 +113,7 @@ func formatJSONValidationErrors(err error) []models.FieldError {
 	return errors
 }
 
+// Функция для форматирования ошибок валидации query и path параметров запроса
 func formatErrors(err error) map[string]string {
 	errors := make(map[string]string)
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
@@ -119,6 +127,8 @@ func formatErrors(err error) map[string]string {
 	return errors
 }
 
+// Функция для создания инстанса модели
+// Использует рефлексию
 func createModelInstance(model any) any {
 	t := reflect.TypeOf(model)
 	if t.Kind() == reflect.Ptr {
@@ -128,6 +138,7 @@ func createModelInstance(model any) any {
 	return reflect.New(t).Interface()
 }
 
+// Функция возвращает человекочитаемые ошибки валидации в зависимости от типа ошибки
 func getValidationMessage(fieldErr validator.FieldError) string {
 	switch fieldErr.Tag() {
 	case "required":

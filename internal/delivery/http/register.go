@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Функция для регистрации эндпоинтов и соответствующих функций хендлера
 func RegisterHTTPEndpoints(router *gin.RouterGroup, facade facade.Facade, validate *validator.Validate) {
 	h := NewHandler(facade)
 

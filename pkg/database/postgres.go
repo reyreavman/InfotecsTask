@@ -10,6 +10,8 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// Обвязка для postgres клиента
+// Используется pgx connection pool
 type Client struct {
 	pool *pgxpool.Pool
 }
@@ -49,19 +51,23 @@ func (db *Client) Ping(ctx context.Context) error {
 	return db.pool.Ping(ctx)
 }
 
+// Обвязка для pgx функции Exec
 func (db *Client) Exec(ctx context.Context, sql string, args ...interface{}) error {
 	_, err := db.pool.Exec(ctx, sql, args...)
 	return err
 }
 
+// Обвязка для pgx функции Query
 func (db *Client) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
 	return db.pool.Query(ctx, sql, args...)
 }
 
+// Обвязка для pgx функции QueryRow
 func (db *Client) QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row {
 	return db.pool.QueryRow(ctx, sql, args...)
 }
 
+// Обвязка для pgx функции BeginTx
 func (db *Client) ExecuteTx(ctx context.Context, fn func(pgx.Tx) error) error {
 	tx, err := db.pool.BeginTx(ctx, pgx.TxOptions{
 		IsoLevel: pgx.Serializable,

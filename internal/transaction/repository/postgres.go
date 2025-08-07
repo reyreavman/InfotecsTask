@@ -6,6 +6,7 @@ import (
 	"infotecstechtask/pkg/database"
 )
 
+// Реализация репозитория
 type TransactionRepository struct {
 	db *database.Client
 }

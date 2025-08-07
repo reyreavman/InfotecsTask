@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// Структура, хранящая в себе данные, необходимые для подключения к БД
 type Config struct {
 	Host         string
 	Port         string
@@ -17,6 +18,7 @@ type Config struct {
 	MaxIdleConns int
 }
 
+// Функция для загрузки конфига, в текущей реализации все параметры собираются из переменных окружения
 func LoadConfig() Config {
 	maxOpenConns, err := strconv.Atoi(os.Getenv("POSTGRES_MAX_OPEN_CONNS"))
 	if err != nil {

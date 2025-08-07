@@ -8,6 +8,11 @@ import (
 	"runtime"
 )
 
+// Структура загрузчика JSON файлов
+// Используется для анмаршалинга JSON файлов в объект необходимых структур
+// Хранит в себе базовый путь до тестовых файлов 
+// 
+// Используется только для тестирования
 type DataLoader struct {
 	basePath string
 }
@@ -20,6 +25,7 @@ func NewDataLoader() *DataLoader {
 	}
 }
 
+// Функция для загрузки JSON фикстуры
 func (dl *DataLoader) LoadJSONFixture(fixturePath string, out any) error {
 	fullPath := filepath.Join(dl.basePath, "fixtures", "json", fixturePath)
 	data, err := ioutil.ReadFile(fullPath)

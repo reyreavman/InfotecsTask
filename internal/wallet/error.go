@@ -2,6 +2,5 @@ package wallet
 
 import "errors"
 
+// Список возможных ошибок бизнес-логики кошельков 
 var ErrWalletNotFound = errors.New("Wallet not found")
-var ErrWalletWithNegativeBalance = errors.New("Wallet has negative balance")
-var ErrFailedToUpdateWallet = errors.New("Failed to update wallet")

@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// Хендлер вызывает функции фасада и в зависимости от возвращаемых значений собирает ответ для клиента
+// Запрос сюда попадает после прохожождения всех миддлваров
 type Handler struct {
 	facade facade.Facade
 }
@@ -28,7 +30,12 @@ func (h *Handler) CreateTransaction(c *gin.Context) {
 	transaction, err := h.facade.CreateTransaction(c.Request.Context(), createTransactionRequest)
 	if err != nil {
 		if errors.Is(err, payment.ErrSenderWalletNotFound) || errors.Is(err, payment.ErrRecipientWalletNotFound) {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Error": err.Error()})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest, 
+				models.Error{
+					Error: err.Error(),
+				},
+			)
 			return
 		}
 		c.AbortWithStatus(http.StatusInternalServerError)

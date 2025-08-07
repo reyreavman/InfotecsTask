@@ -14,6 +14,8 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+// Структура, аккумулирующая в себе testContainer и pgx connection pool
+// Имеет методы для запуска testContainer, его закрытия и накатывания миграций
 type PGTestContainer struct {
 	Container *postgres.PostgresContainer
 	Pool      *pgxpool.Pool

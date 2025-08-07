@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Реализация репозитория
 type WalletRepository struct {
 	db *database.Client
 }

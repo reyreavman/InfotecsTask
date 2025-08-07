@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// Мок фасада для тестирования
 type MockFacade struct {
 	mock.Mock
 }

@@ -21,6 +21,7 @@ import (
 	wservice "infotecstechtask/internal/wallet/service"
 )
 
+// Структура, хранящая в себе указатель на http сервер и экземпляр фасада
 type App struct {
 	httpServer *http.Server
 
@@ -49,6 +50,8 @@ func NewApp() *App {
 	}
 }
 
+// Функция для запуска http сервера
+// Реализован базовый механизм graceful shutdown
 func (a App) Run(port string) error {
 	router := gin.Default()
 	router.Use(

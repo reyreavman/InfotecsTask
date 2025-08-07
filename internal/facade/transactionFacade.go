@@ -10,6 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// Реализация интерфейса Facade
+// Содержит в себе WalletService, TransactionService и PaymentRepository
 type TransactionFacade struct {
 	walletService      wallet.Service
 	transactionService transaction.Service
@@ -29,6 +31,7 @@ func (f TransactionFacade) CreateTransaction(ctx context.Context, createTransact
 	if err != nil {
 		return nil, err
 	}
+
 	return transaction, nil
 }
 

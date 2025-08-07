@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Модель транзакции, которая хранится в БД
 type Transaction struct {
 	ID          uuid.UUID
 	FromAddress uuid.UUID
@@ -16,14 +17,14 @@ type Transaction struct {
 	CreatedAt   time.Time
 }
 
-// Модель для API-запроса на создание транзакции (DTO)
+// Модель для API-запроса на создание транзакции
 type CreateTransactionRequest struct {
 	FromAddress string `json:"from" validate:"required,uuid"`
 	ToAddress   string `json:"to" validate:"required,uuid"`
 	Amount      float32   `json:"amount" validate:"required,min=0"`
 }
 
-// Модель для ответа на API-запрос получения списка транзакций (DTO)
+// Модель для ответа на API-запрос получения списка транзакций 
 type TransactionResponse struct {
 	ID          uuid.UUID `json:"id"`
 	FromAddress uuid.UUID `json:"from"`
@@ -34,9 +35,11 @@ type TransactionResponse struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+// Модель аккумулирующая в себе параметры запроса для получения списка транзакций
 type GetTransactionWithCountRequest struct {
 	Count *int `form:"count" validate:"omitempty,min=1"`
 }
+
 
 func ToTransactionResponse(transaction *Transaction) *TransactionResponse {
 	return &TransactionResponse{

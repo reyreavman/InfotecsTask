@@ -13,6 +13,7 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
+// Реализация репозитория
 type PaymentRepository struct {
 	db *database.Client
 }
@@ -23,6 +24,16 @@ func NewPaymentRepository(db *database.Client) *PaymentRepository {
 	}
 }
 
+// Реализация метода для создания транзакций
+//
+// Если не найден кошелёк отправителя или получателя возвращается ошибка и запись в БД не создается
+// Если кошельки найдены, в БД создается запись о транзакции со статусом pending и соответствующим сообщением
+//
+// В случае, когда на балансе отправителя не хватает нужной суммы для совершения транзакции,
+// запись о транзакции в БД обновляется со статусом failed и соответствующим сообщением
+//
+// В случае, если все необходимые условия выполнены,
+// запись о транзакции в БД обновляется со статусом completed и соответствующим сообщением
 func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransactionRequest *models.CreateTransactionRequest) (*models.TransactionResponse, error) {
 	var transaction *models.Transaction
 

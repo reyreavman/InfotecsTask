@@ -1,5 +1,6 @@
 package http
 
+// Список эндпоинтов
 const (
 	BASED_PATH = "/api"
 	SWAGGER = "/swagger/*any"

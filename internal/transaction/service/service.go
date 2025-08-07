@@ -6,6 +6,8 @@ import (
 	"infotecstechtask/internal/transaction"
 )
 
+// Реализация сервиса
+// Ответственна за обработку ошибок и маппинг моделей
 type TransactionService struct {
 	transactionRepository transaction.Repository
 }
