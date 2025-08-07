@@ -239,7 +239,7 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentConcurrentTransactions
 func (suite *PaymentRepositoryTestSuite) verifyWalletBalance(id uuid.UUID, expected float32) {
 	var balance float32
 	err := suite.pgContainer.Pool.QueryRow(
-		context.Background(), // Используем новый контекст
+		context.Background(),
 		"SELECT balance FROM wallets WHERE id = $1",
 		id,
 	).Scan(&balance)
@@ -250,7 +250,7 @@ func (suite *PaymentRepositoryTestSuite) verifyWalletBalance(id uuid.UUID, expec
 func (suite *PaymentRepositoryTestSuite) verifyTransactionStatus(id uuid.UUID, expected models.Status) {
 	var status models.Status
 	err := suite.pgContainer.Pool.QueryRow(
-		context.Background(), // Используем новый контекст
+		context.Background(),
 		"SELECT status FROM transactions WHERE id = $1",
 		id,
 	).Scan(&status)

@@ -80,7 +80,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 
 		if senderBalance < createTransactionRequest.Amount {
 			transaction.Status = models.Failed
-			transaction.Message = "Sender does not have enough balance"
+			transaction.Message = models.SENDER_NOT_HAVE_ENOUGH_BALANCE
 			_, err = tx.Exec(
 				ctx,
 				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
@@ -102,7 +102,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		)
 		if err != nil {
 			transaction.Status = models.Failed
-			transaction.Message = "Transaction failed"
+			transaction.Message = models.TRANSACTION_FAILED
 			_, err = tx.Exec(
 				ctx,
 				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
@@ -121,7 +121,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		)
 		if err != nil {
 			transaction.Status = models.Failed
-			transaction.Message = "Transaction failed"
+			transaction.Message = models.TRANSACTION_FAILED
 			_, err = tx.Exec(
 				ctx,
 				`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
@@ -139,7 +139,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		}
 
 		transaction.Status = models.Completed
-		transaction.Message = "Transaction completed"
+		transaction.Message = models.TRANSACTION_COMPLETED
 		_, err = tx.Exec(
 			ctx,
 			`UPDATE transactions SET status = $1, message = $2 WHERE id = $3`,
