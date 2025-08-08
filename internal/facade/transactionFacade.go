@@ -38,6 +38,6 @@ func (f TransactionFacade) GetAllTransactions(ctx context.Context) ([]*models.Tr
 	return f.transactionService.GetAllTransactions(ctx)
 }
 
-func (f TransactionFacade) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.Wallet, error) {
+func (f TransactionFacade) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.WalletResponse, error) {
 	return f.walletService.GetWallet(ctx, walletId)
 }

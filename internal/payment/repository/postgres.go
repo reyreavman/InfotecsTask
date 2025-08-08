@@ -7,6 +7,7 @@ import (
 	"infotecstechtask/internal/models"
 	"infotecstechtask/internal/payment"
 	"infotecstechtask/pkg/database"
+	"math"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,10 +40,11 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		return nil, payment.ErrSenderAndRecipientSame
 	}
 
+	transactionAmount := int(math.Round(createTransactionRequest.Amount * 100))
 	var transaction *models.Transaction
 
 	err := r.db.ExecuteTx(ctx, func(tx pgx.Tx) error {
-		var senderBalance, recipientBalance float32
+		var senderBalance, recipientBalance int
 
 		err := tx.QueryRow(
 			ctx,
@@ -72,7 +74,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			ID:          uuid.New(),
 			FromAddress: uuid.MustParse(createTransactionRequest.FromAddress),
 			ToAddress:   uuid.MustParse(createTransactionRequest.ToAddress),
-			Amount:      createTransactionRequest.Amount,
+			Amount:      transactionAmount,
 			Status:      models.Pending,
 			Message:     models.TRANSACTION_PENDING,
 			CreatedAt:   time.Now(),
@@ -84,7 +86,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			transaction.ID,
 			transaction.FromAddress,
 			transaction.ToAddress,
-			transaction.Amount,
+			transactionAmount,
 			transaction.Status,
 			transaction.Message,
 			transaction.CreatedAt,
@@ -93,7 +95,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			return fmt.Errorf("failed to create transaction: %w", err)
 		}
 
-		if senderBalance < createTransactionRequest.Amount {
+		if senderBalance < transactionAmount {
 			transaction.Status = models.Failed
 			transaction.Message = models.SENDER_NOT_HAVE_ENOUGH_BALANCE
 			_, err = tx.Exec(
@@ -112,7 +114,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		_, err = tx.Exec(
 			ctx,
 			`UPDATE wallets SET balance = balance - $1 WHERE id = $2`,
-			createTransactionRequest.Amount,
+			transactionAmount,
 			createTransactionRequest.FromAddress,
 		)
 		if err != nil {
@@ -131,7 +133,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 		_, err = tx.Exec(
 			ctx,
 			`UPDATE wallets SET balance = balance + $1 WHERE id = $2`,
-			createTransactionRequest.Amount,
+			transactionAmount,
 			createTransactionRequest.ToAddress,
 		)
 		if err != nil {
@@ -147,7 +149,7 @@ func (r *PaymentRepository) CreatePayment(ctx context.Context, createTransaction
 			_, err = tx.Exec(
 				ctx,
 				`UPDATE wallets SET balance = balance + $1 WHERE id = $2`,
-				createTransactionRequest.Amount,
+				transactionAmount,
 				createTransactionRequest.FromAddress,
 			)
 			return nil

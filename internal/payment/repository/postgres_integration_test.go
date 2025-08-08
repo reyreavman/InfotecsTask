@@ -6,6 +6,7 @@ import (
 	"infotecstechtask/pkg/database"
 	"infotecstechtask/test/testutils"
 	"log"
+	"math"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -92,8 +93,8 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentSuccess() {
 	suite.Assert().NotNil(response.ID)
 	suite.Assert().NotNil(response.CreatedAt)
 
-	suite.verifyWalletBalance(sender.ID, sender.Balance-response.Amount)
-	suite.verifyWalletBalance(recipient.ID, recipient.Balance+response.Amount)
+	suite.verifyWalletBalance(sender.ID, sender.Balance-int(math.Round(response.Amount * 100)))
+	suite.verifyWalletBalance(recipient.ID, recipient.Balance+int(math.Round(response.Amount * 100)))
 	suite.verifyTransactionStatus(response.ID, models.Completed)
 }
 
@@ -218,14 +219,14 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentConcurrentTransactions
 
 	wg.Wait()
 
-	var actualSenderBalance, actualRecipientBalance float32
+	var actualSenderBalance, actualRecipientBalance int
 	err = suite.pgContainer.Pool.QueryRow(suite.ctx, `SELECT balance FROM wallets WHERE id = $1`, sender.ID).Scan(&actualSenderBalance)
 	suite.Require().NoError(err)
-	suite.Assert().Equal(sender.Balance-float32(concurrency)*request.Amount, actualSenderBalance)
+	suite.Assert().Equal(sender.Balance-int(concurrency)*int(math.Round(request.Amount * 100)), actualSenderBalance)
 
 	err = suite.pgContainer.Pool.QueryRow(suite.ctx, `SELECT balance FROM wallets WHERE id = $1`, recipient.ID).Scan(&actualRecipientBalance)
 	suite.Require().NoError(err)
-	suite.Assert().Equal(recipient.Balance+float32(concurrency)*request.Amount, actualRecipientBalance)
+	suite.Assert().Equal(recipient.Balance+int(concurrency)*int(math.Round(request.Amount * 100)), actualRecipientBalance)
 
 	var txCount int
 	err = suite.pgContainer.Pool.QueryRow(suite.ctx,
@@ -236,8 +237,9 @@ func (suite *PaymentRepositoryTestSuite) TestCreatePaymentConcurrentTransactions
 	suite.Assert().Equal(concurrency, txCount)
 }
 
-func (suite *PaymentRepositoryTestSuite) verifyWalletBalance(id uuid.UUID, expected float32) {
-	var balance float32
+func (suite *PaymentRepositoryTestSuite) verifyWalletBalance(id uuid.UUID, expected int) {
+	log.Printf("expected balance - %d", expected)
+	var balance int
 	err := suite.pgContainer.Pool.QueryRow(
 		context.Background(),
 		"SELECT balance FROM wallets WHERE id = $1",

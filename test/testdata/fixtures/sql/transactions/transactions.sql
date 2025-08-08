@@ -1,4 +1,4 @@
 INSERT INTO transactions (id, from_address, to_address, amount, status, message, created_at) VALUES
-('033a1b17-c706-46f4-b024-49af5ad5a764', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 10, 'pending', 'Transaction pending', '2025-08-04'),
+('033a1b17-c706-46f4-b024-49af5ad5a764', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 1000, 'pending', 'Transaction pending', '2025-08-04'),
 ('fe24590c-4a98-4056-9367-e0806c5f11e6', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 3000, 'failed', 'Sender does not have enough balance', '2025-08-03'),
-('dd6bea64-8eea-423d-b046-c3002deba55b', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 13.3, 'completed', 'Transaction completed', '2025-08-02');
+('dd6bea64-8eea-423d-b046-c3002deba55b', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 1330, 'completed', 'Transaction completed', '2025-08-02');

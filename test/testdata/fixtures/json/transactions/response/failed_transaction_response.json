@@ -2,7 +2,7 @@
     "ID": "033a1b17-c706-46f4-b024-49af5ad5a764",
     "FromAddress": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a10",
     "ToAddress": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12",
-    "Amount": 10,
+    "Amount": 1000,
     "Status": "failed",
     "Message": "Sender does not have enough balance",
     "CreatedAt": "2025-08-04T00:00:00Z"

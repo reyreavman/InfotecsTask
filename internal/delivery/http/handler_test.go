@@ -257,7 +257,7 @@ func (tf *TestInfrastructure) TestGetTransactions() {
 }
 
 func (tf *TestInfrastructure) TestGetWalletSuccess() {
-	var expectedResp models.Wallet
+	var expectedResp models.WalletResponse
 	err := tf.dataLoader.LoadJSONFixture("wallets/wallet.json", &expectedResp)
 	tf.Require().NoError(err)
 
@@ -286,7 +286,7 @@ func (tf *TestInfrastructure) TestGetWalletSuccess() {
 }
 
 func (tf *TestInfrastructure) TestGetWalletNotFound() {
-	var expectedResp models.Wallet
+	var expectedResp models.WalletResponse
 	err := tf.dataLoader.LoadJSONFixture("wallets/wallet.json", &expectedResp)
 	tf.Require().NoError(err)
 

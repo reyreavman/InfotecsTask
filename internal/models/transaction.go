@@ -1,6 +1,7 @@
 package models
 
 import (
+	"math"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,7 +12,7 @@ type Transaction struct {
 	ID          uuid.UUID
 	FromAddress uuid.UUID
 	ToAddress   uuid.UUID
-	Amount      float32
+	Amount      int
 	Status      Status
 	Message     string
 	CreatedAt   time.Time
@@ -21,7 +22,7 @@ type Transaction struct {
 type CreateTransactionRequest struct {
 	FromAddress string  `json:"from" validate:"required,uuid"`
 	ToAddress   string  `json:"to" validate:"required,uuid"`
-	Amount      float32 `json:"amount" validate:"required,min=0"`
+	Amount      float64 `json:"amount" validate:"required,min=0"`
 }
 
 // Модель для ответа на API-запрос получения списка транзакций
@@ -29,7 +30,7 @@ type TransactionResponse struct {
 	ID          uuid.UUID `json:"id"`
 	FromAddress uuid.UUID `json:"from"`
 	ToAddress   uuid.UUID `json:"to"`
-	Amount      float32   `json:"amount"`
+	Amount      float64   `json:"amount"`
 	Status      Status    `json:"status"`
 	Message     string    `json:"message"`
 	CreatedAt   time.Time `json:"created_at"`
@@ -45,7 +46,7 @@ func ToTransactionResponse(transaction *Transaction) *TransactionResponse {
 		ID:          transaction.ID,
 		FromAddress: transaction.FromAddress,
 		ToAddress:   transaction.ToAddress,
-		Amount:      transaction.Amount,
+		Amount:      float64(transaction.Amount) / 100.0,
 		Status:      transaction.Status,
 		Message:     transaction.Message,
 		CreatedAt:   transaction.CreatedAt,
@@ -60,7 +61,7 @@ func ToTransactionResponses(transactions []*Transaction) []*TransactionResponse 
 			ID:          transaction.ID,
 			FromAddress: transaction.FromAddress,
 			ToAddress:   transaction.ToAddress,
-			Amount:      transaction.Amount,
+			Amount:      float64(transaction.Amount) / 100.0,
 			Status:      transaction.Status,
 			Message:     transaction.Message,
 			CreatedAt:   transaction.CreatedAt,
@@ -76,7 +77,7 @@ func ToTransaction(transaction *CreateTransactionRequest, id uuid.UUID, status S
 		ID:          id,
 		FromAddress: uuid.MustParse(transaction.FromAddress),
 		ToAddress:   uuid.MustParse(transaction.ToAddress),
-		Amount:      transaction.Amount,
+		Amount:      int(math.Round(transaction.Amount * 100)),
 		Status:      status,
 		Message:     message,
 		CreatedAt:   createdAt,

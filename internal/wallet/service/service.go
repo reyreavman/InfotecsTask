@@ -22,7 +22,7 @@ func NewWalletService(walletRepository wallet.Repository) *WalletService {
 	}
 }
 
-func (s WalletService) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.Wallet, error) {
+func (s WalletService) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.WalletResponse, error) {
 	walletToReturn, err := s.walletRepository.GetWallet(ctx, walletId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -30,5 +30,5 @@ func (s WalletService) GetWallet(ctx context.Context, walletId uuid.UUID) (*mode
 		}
 		return nil, err
 	}
-	return walletToReturn, nil
+	return models.ToWalletResponse(walletToReturn), nil
 }

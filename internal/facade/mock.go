@@ -46,12 +46,12 @@ func (m *MockFacade) GetAllTransactions(ctx context.Context) ([]*models.Transact
 	return resp, args.Error(1)
 }
 
-func (m *MockFacade) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.Wallet, error) {
+func (m *MockFacade) GetWallet(ctx context.Context, walletId uuid.UUID) (*models.WalletResponse, error) {
 	args := m.Called(ctx, walletId)
 
-	var wallet *models.Wallet
+	var wallet *models.WalletResponse
 	if args.Get(0) != nil {
-		wallet = args.Get(0).(*models.Wallet)
+		wallet = args.Get(0).(*models.WalletResponse)
 	}
 
 	return wallet, args.Error(1)
