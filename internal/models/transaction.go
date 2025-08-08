@@ -19,12 +19,12 @@ type Transaction struct {
 
 // Модель для API-запроса на создание транзакции
 type CreateTransactionRequest struct {
-	FromAddress string `json:"from" validate:"required,uuid"`
-	ToAddress   string `json:"to" validate:"required,uuid"`
-	Amount      float32   `json:"amount" validate:"required,min=0"`
+	FromAddress string  `json:"from" validate:"required,uuid"`
+	ToAddress   string  `json:"to" validate:"required,uuid"`
+	Amount      float32 `json:"amount" validate:"required,min=0"`
 }
 
-// Модель для ответа на API-запрос получения списка транзакций 
+// Модель для ответа на API-запрос получения списка транзакций
 type TransactionResponse struct {
 	ID          uuid.UUID `json:"id"`
 	FromAddress uuid.UUID `json:"from"`
@@ -39,7 +39,6 @@ type TransactionResponse struct {
 type GetTransactionWithCountRequest struct {
 	Count *int `form:"count" validate:"omitempty,min=1"`
 }
-
 
 func ToTransactionResponse(transaction *Transaction) *TransactionResponse {
 	return &TransactionResponse{

@@ -78,7 +78,7 @@ func ParamsValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 
 		if err := c.ShouldBindQuery(val); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-				"error":   "Invalid query parameters",
+				"error": "Invalid query parameters",
 			})
 			return
 		}

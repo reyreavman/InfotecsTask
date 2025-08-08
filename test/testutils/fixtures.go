@@ -14,7 +14,7 @@ import (
 // Структура загрузчика SQL миграций
 // Используется для загрузки и накатывания миграций-фикстур на testContainer
 // Хранит в себе базовый путь до тестовых файлов и pgx connection pool
-// 
+//
 // Используется только для тестирования
 type FixtureManager struct {
 	pool     *pgxpool.Pool
@@ -25,7 +25,7 @@ func NewFixtureManager(pool *pgxpool.Pool) *FixtureManager {
 	_, filename, _, _ := runtime.Caller(0)
 	dir := filepath.Dir(filename)
 	return &FixtureManager{
-		pool: pool,
+		pool:     pool,
 		basePath: filepath.Join(dir, "..", "testdata"),
 	}
 }
@@ -41,7 +41,7 @@ func (fm *FixtureManager) ApplySQLFixture(ctx context.Context, fixturePath strin
 	commands := strings.Split(string(content), ":")
 	for _, cmd := range commands {
 		cmd = strings.TrimSpace(cmd)
-		if cmd == ""{
+		if cmd == "" {
 			continue
 		}
 		if _, err := fm.pool.Exec(ctx, cmd); err != nil {
