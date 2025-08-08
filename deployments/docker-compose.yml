@@ -12,6 +12,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: on-failure
     environment:
       APP_PORT: "${APP_PORT}"
       
@@ -21,6 +22,7 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
       POSTGRES_DB_NAME: "${POSTGRES_DB_NAME}"
       POSTGRES_SSL_MODE: "${POSTGRES_SSL_MODE}"
+    
 
   postgres:
     container_name: postgres
