@@ -27,12 +27,7 @@ func NewFacade(walletService wallet.Service, transactionService transaction.Serv
 }
 
 func (f TransactionFacade) CreateTransaction(ctx context.Context, createTransactionRequest *models.CreateTransactionRequest) (*models.TransactionResponse, error) {
-	transaction, err := f.paymentRepository.CreatePayment(ctx, createTransactionRequest)
-	if err != nil {
-		return nil, err
-	}
-
-	return transaction, nil
+	return f.paymentRepository.CreatePayment(ctx, createTransactionRequest)
 }
 
 func (f TransactionFacade) GetTransactions(ctx context.Context, count int) ([]*models.TransactionResponse, error) {
