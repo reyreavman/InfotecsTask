@@ -30,13 +30,7 @@ func JSONValidation(model any, validate *validator.Validate) gin.HandlerFunc {
 		val := createModelInstance(model)
 
 		if err := c.ShouldBindJSON(val); err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusBadRequest,
-				models.ValidationError{
-					Error:   "Invalid JSON format",
-					Details: formatJSONValidationErrors(err),
-				},
-			)
+			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
@@ -120,7 +114,7 @@ func formatErrors(err error) map[string]string {
 			errors[fieldErr.Field()] = fieldErr.Tag()
 		}
 	}
-	
+
 	return errors
 }
 
