@@ -2,15 +2,16 @@ version: "3.8"
 
 services:
   app:
-    container_name: infotecsTechTask
+    container_name: infotecs-tech-task
     build:
       context: ..
       dockerfile: deployments/dockerfile
-    image: infotecsTechTask:latest
+    image: infotecs-tech-task:latest
     ports:
       - "${APP_PORT}:${APP_PORT}"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       POSTGRES_HOST: "${POSTGRES_HOST}"
       POSTGRES_PORT: "${POSTGRES_PORT}"
@@ -20,6 +21,7 @@ services:
       POSTGRES_SSL_MODE: "${POSTGRES_SSL_MODE}"
       POSTGRES_MAX_OPEN_CONNS: "${POSTGRES_MAX_OPEN_CONNS}"
       POSTGRES_MAX_IDLE_CONNS: "${POSTGRES_MAX_IDLE_CONNS}"
+      APP_PORT: "${APP_PORT}"
 
   postgres:
     container_name: postgres
