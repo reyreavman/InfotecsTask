@@ -8,6 +8,7 @@ import (
 )
 
 // Модель транзакции, которая хранится в БД
+// Amount - размер транзакции (в копейках)
 type Transaction struct {
 	ID          uuid.UUID
 	FromAddress uuid.UUID
