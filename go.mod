@@ -97,7 +97,6 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v4 v4.18.3
-	github.com/joho/godotenv v1.5.1
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.38.0
 	github.com/ulule/limiter/v3 v3.11.2
 	golang.org/x/crypto v0.40.0 // indirect
