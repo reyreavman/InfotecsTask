@@ -120,6 +120,7 @@ func formatErrors(err error) map[string]string {
 			errors[fieldErr.Field()] = fieldErr.Tag()
 		}
 	}
+	
 	return errors
 }
 

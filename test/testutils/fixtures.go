@@ -24,6 +24,7 @@ type FixtureManager struct {
 func NewFixtureManager(pool *pgxpool.Pool) *FixtureManager {
 	_, filename, _, _ := runtime.Caller(0)
 	dir := filepath.Dir(filename)
+	
 	return &FixtureManager{
 		pool:     pool,
 		basePath: filepath.Join(dir, "..", "testdata"),
@@ -48,5 +49,6 @@ func (fm *FixtureManager) ApplySQLFixture(ctx context.Context, fixturePath strin
 			return fmt.Errorf("failed to execute SQL command %s: %w", cmd, err)
 		}
 	}
+	
 	return nil
 }

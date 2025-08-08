@@ -62,6 +62,7 @@ func (pg *PGTestContainer) Close(ctx context.Context) error {
 	if pg.Container != nil {
 		return pg.Container.Terminate(ctx)
 	}
+	
 	return nil
 }
 

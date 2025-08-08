@@ -30,5 +30,6 @@ func (s WalletService) GetWallet(ctx context.Context, walletId uuid.UUID) (*mode
 		}
 		return nil, err
 	}
+	
 	return models.ToWalletResponse(walletToReturn), nil
 }

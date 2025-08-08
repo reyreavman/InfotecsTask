@@ -20,6 +20,7 @@ type DataLoader struct {
 func NewDataLoader() *DataLoader {
 	_, filename, _, _ := runtime.Caller(0)
 	dir := filepath.Dir(filename)
+	
 	return &DataLoader{
 		basePath: filepath.Join(dir, "..", "testdata"),
 	}
